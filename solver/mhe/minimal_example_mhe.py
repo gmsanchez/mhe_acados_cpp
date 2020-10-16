@@ -114,7 +114,7 @@ x0_bar = np.array([0.0, np.pi, 0.0, 0.0])
 simX = np.loadtxt('simX.txt')
 simY = np.loadtxt('simY.txt')
 simU = np.loadtxt('simU.txt')
-simU = simU.reshape(N,nu)
+simU = simU[:3].reshape((N,nu))
 
 # set measurements and controls
 for j in range(N):
