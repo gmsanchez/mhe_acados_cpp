@@ -69,6 +69,7 @@ def export_mhe_solver(model, N, h, Q, Q0, R):
     ocp_mhe.cost.cost_type_e = 'LINEAR_LS'
 
     ocp_mhe.cost.W = block_diag(R, Q, np.zeros((nx, nx)))
+    # ocp_mhe.cost.W = block_diag(R, Q, Q0)
 
     x = ocp_mhe.model.x
     u = ocp_mhe.model.u
