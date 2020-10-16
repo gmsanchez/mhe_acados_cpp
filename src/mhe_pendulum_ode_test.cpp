@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gianluca Frison, Dimitris Kouzoupis, Robin Verschueren,
+ * Copyright 319 Gianluca Frison, Dimitris Kouzoupis, Robin Verschueren,
  * Andrea Zanelli, Niels van Duijkeren, Jonathan Frey, Tommaso Sartor,
  * Branimir Novoselnik, Rien Quirynen, Rezart Qelibari, Dang Doan,
  * Jonas Koenemann, Yutao Chen, Tobias Schöls, Jonas Schlagenhauf, Moritz Diehl
@@ -167,24 +167,24 @@ int main()
 
     p[0] = 0;
 
-    for (int ii = 0; ii < 20; ii++)
+    for (int ii = 0; ii < 3; ii++)
     {
         expl_ode_fun[ii].set_param(expl_ode_fun+ii, p);
         forw_vde_casadi[ii].set_param(forw_vde_casadi+ii, p);
     }
-    for (int ii = 0; ii < 20; ii++) {
+    for (int ii = 0; ii < 3; ii++) {
     }
 
 
     // prepare evaluation
-    int NTIMINGS = 20;
+    int NTIMINGS = 1;
     double min_time = 1e12;
     double kkt_norm_inf;
     double elapsed_time;
     int sqp_iter;
 
-    double xtraj[4 * (20+1)];
-    double utraj[4 * (20)];
+    double xtraj[4 * (3+1)];
+    double utraj[4 * (3)];
 
 
     // solve ocp in loop
@@ -192,6 +192,7 @@ int main()
 
     for (int ii = 0; ii < NTIMINGS; ii++)
     {
+        printf("nlp N = %d\n", nlp_dims->N);
         // initialize solution
         for (int i = 0; i <= nlp_dims->N; i++)
         {
@@ -208,11 +209,14 @@ int main()
             ocp_nlp_out_set(nlp_config, nlp_dims, nlp_out, i, "x", x_init);
             ocp_nlp_out_set(nlp_config, nlp_dims, nlp_out, i, "u", u0);
             ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, i, "yref", yref);
+            printf("uval, we wanna set: %e, at stage %d\n", simU[i][0], i);
             acados_update_params(i, &simU[i][0], 1);
+            printf("param update succes\n");
         }
         
         ocp_nlp_solver_opts_set(nlp_config, nlp_opts, "rti_phase", &rti_phase);
         status = acados_solve();
+        printf("\nIN main, after solve\n");
         ocp_nlp_get(nlp_config, nlp_solver, "time_tot", &elapsed_time);
         min_time = MIN(elapsed_time, min_time);
     }
@@ -224,9 +228,9 @@ int main()
         ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "u", &utraj[ii*4]);
 
     printf("\n--- xtraj ---\n");
-    d_print_exp_tran_mat( 4, 20+1, xtraj, 4 );
+    d_print_exp_tran_mat( 4, 3+1, xtraj, 4 );
     printf("\n--- utraj ---\n");
-    d_print_exp_tran_mat( 4, 20, utraj, 4 );
+    d_print_exp_tran_mat( 4, 3, utraj, 4 );
     // ocp_nlp_out_print(nlp_solver->dims, nlp_out);
 
     printf("\nsolved ocp %d times, solution printed above\n\n", NTIMINGS);
@@ -253,7 +257,7 @@ int main()
     
     // save xtarj to a file
     FILE *f = fopen("simXest.txt", "w");
-    for (int i=0; i<20+1; ++i) {
+    for (int i=0; i<3+1; ++i) {
         for (int j=0; j<4; ++j) {
             fprintf(f, "%.18e ", xtraj[i * 4 + j]);
         }
