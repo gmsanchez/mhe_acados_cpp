@@ -1,0 +1,4 @@
+*.json
+solver/mhe/c_generated_code
+__pycache__
+build

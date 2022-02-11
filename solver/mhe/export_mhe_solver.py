@@ -69,6 +69,7 @@ def export_mhe_solver(model, N, h, Q, Q0, R):
     ocp_mhe.cost.cost_type_e = 'LINEAR_LS'
 
     ocp_mhe.cost.W = block_diag(R, Q, np.zeros((nx, nx)))
+    # ocp_mhe.cost.W = block_diag(R, Q, Q0)
 
     x = ocp_mhe.model.x
     u = ocp_mhe.model.u
@@ -92,7 +93,8 @@ def export_mhe_solver(model, N, h, Q, Q0, R):
 
     ocp_mhe.solver_options.nlp_solver_type = 'SQP'
     # ocp_mhe.solver_options.nlp_solver_type = 'SQP_RTI'
-    ocp_mhe.solver_options.nlp_solver_max_iter = 200
+    ocp_mhe.solver_options.nlp_solver_max_iter = 3
+    ocp_mhe.solver_options.print_level = 1
 
     acados_solver_mhe = AcadosOcpSolver(ocp_mhe, json_file = 'acados_ocp.json')
 

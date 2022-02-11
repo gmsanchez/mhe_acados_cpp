@@ -47,7 +47,7 @@ from utils import plot_pendulum
 
 # general
 Tf = 1.0
-N = 20
+N = 3
 h = Tf/N
 Fmax = 80
 
@@ -60,7 +60,7 @@ nu = model.u.size()[0]
 Q_ocp = np.diag([1e3, 1e3, 1e-2, 1e-2])
 R_ocp = 1e-2 *np.eye(1)
 
-acados_solver_ocp = export_ocp_solver(model, N, h, Q_ocp, R_ocp, Fmax)
+# acados_solver_ocp = export_ocp_solver(model, N, h, Q_ocp, R_ocp, Fmax)
 
 # mhe model and solver
 model_mhe = export_mhe_ode_model()
@@ -93,23 +93,28 @@ simWest = np.zeros((N, nx))
 x0_bar = np.array([0.0, np.pi, 0.0, 0.0])
 
 # solve ocp problem
-status = acados_solver_ocp.solve()
+# status = acados_solver_ocp.solve()
 
-if status != 0:
-    raise Exception('acados returned status {}. Exiting.'.format(status))
+# if status != 0:
+#     raise Exception('acados returned status {}. Exiting.'.format(status))
 
-# get solution
-for i in range(N):
-    simX[i,:] = acados_solver_ocp.get(i, "x")
-    simU[i,:] = acados_solver_ocp.get(i, "u")
-    simY[i,:] = simX[i,:] + np.transpose(np.diag(v_stds) @ np.random.standard_normal((nx, 1)))
+# # get solution
+# for i in range(N):
+#     simX[i,:] = acados_solver_ocp.get(i, "x")
+#     simU[i,:] = acados_solver_ocp.get(i, "u")
+#     simY[i,:] = simX[i,:] + np.transpose(np.diag(v_stds) @ np.random.standard_normal((nx, 1)))
 
-simX[N,:] = acados_solver_ocp.get(N, "x")
-simY[N,:] = simX[N,:] + np.transpose(np.diag(v_stds) @ np.random.standard_normal((nx, 1)))
+# simX[N,:] = acados_solver_ocp.get(N, "x")
+# simY[N,:] = simX[N,:] + np.transpose(np.diag(v_stds) @ np.random.standard_normal((nx, 1)))
 
-np.savetxt('simX.txt', simX)
-np.savetxt('simU.txt', simU)
-np.savetxt('simY.txt', simY)
+# np.savetxt('simX.txt', simX)
+# np.savetxt('simU.txt', simU)
+# np.savetxt('simY.txt', simY)
+
+simX = np.loadtxt('simX.txt')
+simY = np.loadtxt('simY.txt')
+simU = np.loadtxt('simU.txt')
+simU = simU[:3].reshape((N,nu))
 
 # set measurements and controls
 for j in range(N):

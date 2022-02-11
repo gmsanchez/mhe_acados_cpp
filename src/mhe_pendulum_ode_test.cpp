@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Gianluca Frison, Dimitris Kouzoupis, Robin Verschueren,
+ * Copyright 319 Gianluca Frison, Dimitris Kouzoupis, Robin Verschueren,
  * Andrea Zanelli, Niels van Duijkeren, Jonathan Frey, Tommaso Sartor,
  * Branimir Novoselnik, Rien Quirynen, Rezart Qelibari, Dang Doan,
  * Jonas Koenemann, Yutao Chen, Tobias Schöls, Jonas Schlagenhauf, Moritz Diehl
@@ -167,33 +167,193 @@ int main()
 
     p[0] = 0;
 
-    for (int ii = 0; ii < 20; ii++)
+    for (int ii = 0; ii < 3; ii++)
     {
         expl_ode_fun[ii].set_param(expl_ode_fun+ii, p);
         forw_vde_casadi[ii].set_param(forw_vde_casadi+ii, p);
     }
-    for (int ii = 0; ii < 20; ii++) {
+    for (int ii = 0; ii < 3; ii++) {
     }
 
 
     // prepare evaluation
-    int NTIMINGS = 20;
+    int NTIMINGS = 1;
     double min_time = 1e12;
     double kkt_norm_inf;
     double elapsed_time;
     int sqp_iter;
 
-    double xtraj[4 * (20+1)];
-    double utraj[4 * (20)];
+    double xtraj[4 * (3+1)];
+    double utraj[4 * (3)];
 
 
     // solve ocp in loop
     int rti_phase = 0;
 
+    // // set arrival cost penalty (W at stage 0)
+    // vector< vector< double > > W0;
+    // if (readDataFromFile("../solver/mhe/W0.txt", W0) == false)
+    // {
+    //     cout << "Cannot read W0" << endl;
+    //     return EXIT_FAILURE;
+    // }
+        /**** Cost ****/
+    #define NY 12
+    double W[NY*NY];
+    
+    W[0+(NY) * 0] = 0.1;
+    W[0+(NY) * 1] = 0;
+    W[0+(NY) * 2] = 0;
+    W[0+(NY) * 3] = 0;
+    W[0+(NY) * 4] = 0;
+    W[0+(NY) * 5] = 0;
+    W[0+(NY) * 6] = 0;
+    W[0+(NY) * 7] = 0;
+    W[0+(NY) * 8] = 0;
+    W[0+(NY) * 9] = 0;
+    W[0+(NY) * 10] = 0;
+    W[0+(NY) * 11] = 0;
+    W[1+(NY) * 0] = 0;
+    W[1+(NY) * 1] = 0.1;
+    W[1+(NY) * 2] = 0;
+    W[1+(NY) * 3] = 0;
+    W[1+(NY) * 4] = 0;
+    W[1+(NY) * 5] = 0;
+    W[1+(NY) * 6] = 0;
+    W[1+(NY) * 7] = 0;
+    W[1+(NY) * 8] = 0;
+    W[1+(NY) * 9] = 0;
+    W[1+(NY) * 10] = 0;
+    W[1+(NY) * 11] = 0;
+    W[2+(NY) * 0] = 0;
+    W[2+(NY) * 1] = 0;
+    W[2+(NY) * 2] = 0.1;
+    W[2+(NY) * 3] = 0;
+    W[2+(NY) * 4] = 0;
+    W[2+(NY) * 5] = 0;
+    W[2+(NY) * 6] = 0;
+    W[2+(NY) * 7] = 0;
+    W[2+(NY) * 8] = 0;
+    W[2+(NY) * 9] = 0;
+    W[2+(NY) * 10] = 0;
+    W[2+(NY) * 11] = 0;
+    W[3+(NY) * 0] = 0;
+    W[3+(NY) * 1] = 0;
+    W[3+(NY) * 2] = 0;
+    W[3+(NY) * 3] = 0.1;
+    W[3+(NY) * 4] = 0;
+    W[3+(NY) * 5] = 0;
+    W[3+(NY) * 6] = 0;
+    W[3+(NY) * 7] = 0;
+    W[3+(NY) * 8] = 0;
+    W[3+(NY) * 9] = 0;
+    W[3+(NY) * 10] = 0;
+    W[3+(NY) * 11] = 0;
+    W[4+(NY) * 0] = 0;
+    W[4+(NY) * 1] = 0;
+    W[4+(NY) * 2] = 0;
+    W[4+(NY) * 3] = 0;
+    W[4+(NY) * 4] = 0.1;
+    W[4+(NY) * 5] = 0;
+    W[4+(NY) * 6] = 0;
+    W[4+(NY) * 7] = 0;
+    W[4+(NY) * 8] = 0;
+    W[4+(NY) * 9] = 0;
+    W[4+(NY) * 10] = 0;
+    W[4+(NY) * 11] = 0;
+    W[5+(NY) * 0] = 0;
+    W[5+(NY) * 1] = 0;
+    W[5+(NY) * 2] = 0;
+    W[5+(NY) * 3] = 0;
+    W[5+(NY) * 4] = 0;
+    W[5+(NY) * 5] = 0.1;
+    W[5+(NY) * 6] = 0;
+    W[5+(NY) * 7] = 0;
+    W[5+(NY) * 8] = 0;
+    W[5+(NY) * 9] = 0;
+    W[5+(NY) * 10] = 0;
+    W[5+(NY) * 11] = 0;
+    W[6+(NY) * 0] = 0;
+    W[6+(NY) * 1] = 0;
+    W[6+(NY) * 2] = 0;
+    W[6+(NY) * 3] = 0;
+    W[6+(NY) * 4] = 0;
+    W[6+(NY) * 5] = 0;
+    W[6+(NY) * 6] = 0.1;
+    W[6+(NY) * 7] = 0;
+    W[6+(NY) * 8] = 0;
+    W[6+(NY) * 9] = 0;
+    W[6+(NY) * 10] = 0;
+    W[6+(NY) * 11] = 0;
+    W[7+(NY) * 0] = 0;
+    W[7+(NY) * 1] = 0;
+    W[7+(NY) * 2] = 0;
+    W[7+(NY) * 3] = 0;
+    W[7+(NY) * 4] = 0;
+    W[7+(NY) * 5] = 0;
+    W[7+(NY) * 6] = 0;
+    W[7+(NY) * 7] = 0.1;
+    W[7+(NY) * 8] = 0;
+    W[7+(NY) * 9] = 0;
+    W[7+(NY) * 10] = 0;
+    W[7+(NY) * 11] = 0;
+    W[8+(NY) * 0] = 0;
+    W[8+(NY) * 1] = 0;
+    W[8+(NY) * 2] = 0;
+    W[8+(NY) * 3] = 0;
+    W[8+(NY) * 4] = 0;
+    W[8+(NY) * 5] = 0;
+    W[8+(NY) * 6] = 0;
+    W[8+(NY) * 7] = 0;
+    W[8+(NY) * 8] = 100;
+    W[8+(NY) * 9] = 0;
+    W[8+(NY) * 10] = 0;
+    W[8+(NY) * 11] = 0;
+    W[9+(NY) * 0] = 0;
+    W[9+(NY) * 1] = 0;
+    W[9+(NY) * 2] = 0;
+    W[9+(NY) * 3] = 0;
+    W[9+(NY) * 4] = 0;
+    W[9+(NY) * 5] = 0;
+    W[9+(NY) * 6] = 0;
+    W[9+(NY) * 7] = 0;
+    W[9+(NY) * 8] = 0;
+    W[9+(NY) * 9] = 100;
+    W[9+(NY) * 10] = 0;
+    W[9+(NY) * 11] = 0;
+    W[10+(NY) * 0] = 0;
+    W[10+(NY) * 1] = 0;
+    W[10+(NY) * 2] = 0;
+    W[10+(NY) * 3] = 0;
+    W[10+(NY) * 4] = 0;
+    W[10+(NY) * 5] = 0;
+    W[10+(NY) * 6] = 0;
+    W[10+(NY) * 7] = 0;
+    W[10+(NY) * 8] = 0;
+    W[10+(NY) * 9] = 0;
+    W[10+(NY) * 10] = 100;
+    W[10+(NY) * 11] = 0;
+    W[11+(NY) * 0] = 0;
+    W[11+(NY) * 1] = 0;
+    W[11+(NY) * 2] = 0;
+    W[11+(NY) * 3] = 0;
+    W[11+(NY) * 4] = 0;
+    W[11+(NY) * 5] = 0;
+    W[11+(NY) * 6] = 0;
+    W[11+(NY) * 7] = 0;
+    W[11+(NY) * 8] = 0;
+    W[11+(NY) * 9] = 0;
+    W[11+(NY) * 10] = 0;
+    W[11+(NY) * 11] = 100;
+    ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, 0, "W", W);
+
+
     for (int ii = 0; ii < NTIMINGS; ii++)
     {
+        printf("nlp N = %d\n", nlp_dims->N);
         // initialize solution
-        for (int i = 0; i <= nlp_dims->N; i++)
+        // TODO: loop to N with < or <=?!
+        for (int i = 0; i < nlp_dims->N; i++)
         {
             yref[0] = simY[i][0];
             yref[1] = simY[i][1];
@@ -208,11 +368,14 @@ int main()
             ocp_nlp_out_set(nlp_config, nlp_dims, nlp_out, i, "x", x_init);
             ocp_nlp_out_set(nlp_config, nlp_dims, nlp_out, i, "u", u0);
             ocp_nlp_cost_model_set(nlp_config, nlp_dims, nlp_in, i, "yref", yref);
+            printf("uval, we wanna set: %e, at stage %d\n", simU[i][0], i);
             acados_update_params(i, &simU[i][0], 1);
+            printf("param update succes\n");
         }
         
         ocp_nlp_solver_opts_set(nlp_config, nlp_opts, "rti_phase", &rti_phase);
         status = acados_solve();
+        printf("\nIN main, after solve\n");
         ocp_nlp_get(nlp_config, nlp_solver, "time_tot", &elapsed_time);
         min_time = MIN(elapsed_time, min_time);
     }
@@ -224,9 +387,9 @@ int main()
         ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, ii, "u", &utraj[ii*4]);
 
     printf("\n--- xtraj ---\n");
-    d_print_exp_tran_mat( 4, 20+1, xtraj, 4 );
+    d_print_exp_tran_mat( 4, 3+1, xtraj, 4 );
     printf("\n--- utraj ---\n");
-    d_print_exp_tran_mat( 4, 20, utraj, 4 );
+    d_print_exp_tran_mat( 4, 3, utraj, 4 );
     // ocp_nlp_out_print(nlp_solver->dims, nlp_out);
 
     printf("\nsolved ocp %d times, solution printed above\n\n", NTIMINGS);
@@ -253,7 +416,7 @@ int main()
     
     // save xtarj to a file
     FILE *f = fopen("simXest.txt", "w");
-    for (int i=0; i<20+1; ++i) {
+    for (int i=0; i<3+1; ++i) {
         for (int j=0; j<4; ++j) {
             fprintf(f, "%.18e ", xtraj[i * 4 + j]);
         }
